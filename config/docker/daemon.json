@@ -1,0 +1,7 @@
+{
+  "bip": "172.21.0.1/16",
+  "experimental": true,
+  "features": { "buildkit": true },
+  "insecure-registries": ["172.21.0.1:6666"]
+}
+
