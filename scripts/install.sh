@@ -27,10 +27,12 @@ sudo chsh --shell /usr/bin/zsh pi >${LOG_FILE} 2>&1
 mkdir -p ~/.ssh && cp ${CONFIG_DIR}/ssh/authorized_keys ~/.ssh/authorized_keys >${LOG_FILE} 2>&1
 cp ${CONFIG_DIR}/zsh ~/.zsh >${LOG_FILE} 2>&1
 mkdir -p ~/.local/share && cp ${CONFIG_DIR}/fzf ~/.local/share/ >${LOG_FILE} 2>&1
-pushd && cd ~/ && ln -s .zsh/zshrc .zshrc && popd
+CWD=$(pwd)
+cd ~/ && ln -s .zsh/zshrc .zshrc
+cd ${CWD}
 
 # Initialize zsh stuff
-mkdir ~/.local/bin
+mkdir ~/.local/bin >${LOG_FILE} 2>&1
 curl -sfL git.io/antibody 2>${LOG_FILE} | sh -s - -b ~/.local/bin/ >${LOG_FILE} 2>&1
 ~/.local/bin/antibody bundle < ~/.zsh/plugins.txt > ~/.zsh/plugins.sh 2>${LOG_FILE}
 log "Zsh set up, don't forget to \`source ~/.zshrc\`"
