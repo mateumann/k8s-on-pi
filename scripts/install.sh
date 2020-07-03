@@ -24,9 +24,16 @@ sudo localectl set-keymap pl2 >${LOG_FILE} 2>&1
 sudo localectl set-locale en_GB.UTF-8 >${LOG_FILE} 2>&1
 sudo cp ${CONFIG_DIR}/docker/daemon.json /etc/docker/daemon.json >${LOG_FILE} 2>&1
 sudo chsh --shell /usr/bin/zsh pi >${LOG_FILE} 2>&1
-cp ${CONFIG_DIR}/ssh/authorized_keys ~/.ssh/authorized_keys >${LOG_FILE} 2>&1
+mkdir -p ~/.ssh && cp ${CONFIG_DIR}/ssh/authorized_keys ~/.ssh/authorized_keys >${LOG_FILE} 2>&1
+cp ${CONFIG_DIR}/zsh ~/.zsh >${LOG_FILE} 2>&1
+mkdir -p ~/.local/share && cp ${CONFIG_DIR}/fzf ~/.local/share/ >${LOG_FILE} 2>&1
+pushd && cd ~/ && ln -s .zsh/zshrc .zshrc && popd
 
-
+# Initialize zsh stuff
+mkdir ~/.local/bin
+curl -sfL git.io/antibody | sh -s - -b ~/.local/bin/
+~/.local/bin/antibody bundle < ~/.zsh/plugins.txt > ~/.zsh/plugins.sh
+source ~/.zshrc
 
 # Bye
 log "The log file of all operations is stored at ${LOG_FILE}"
