@@ -31,9 +31,9 @@ pushd && cd ~/ && ln -s .zsh/zshrc .zshrc && popd
 
 # Initialize zsh stuff
 mkdir ~/.local/bin
-curl -sfL git.io/antibody | sh -s - -b ~/.local/bin/
-~/.local/bin/antibody bundle < ~/.zsh/plugins.txt > ~/.zsh/plugins.sh
-source ~/.zshrc
+curl -sfL git.io/antibody 2>${LOG_FILE} | sh -s - -b ~/.local/bin/ >${LOG_FILE} 2>&1
+~/.local/bin/antibody bundle < ~/.zsh/plugins.txt > ~/.zsh/plugins.sh 2>${LOG_FILE}
+log "Zsh set up, don't forget to \`source ~/.zshrc\`"
 
 # Bye
 log "The log file of all operations is stored at ${LOG_FILE}"
