@@ -28,7 +28,7 @@ mkdir -p ~/.ssh && cp ${CONFIG_DIR}/ssh/authorized_keys ~/.ssh/authorized_keys >
 cp ${CONFIG_DIR}/zsh ~/.zsh >${LOG_FILE} 2>&1
 mkdir -p ~/.local/share && cp ${CONFIG_DIR}/fzf ~/.local/share/ >${LOG_FILE} 2>&1
 CWD=$(pwd)
-cd ~/ && ln -s .zsh/zshrc .zshrc
+cd ~/ && ln -s .zsh/zshrc .zshrc >${LOG_FILE} 2>&1
 cd ${CWD}
 
 # Initialize zsh stuff
