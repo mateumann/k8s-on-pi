@@ -4,6 +4,13 @@ SCRIPT_DIR=`dirname $(realpath $0)`
 CONFIG_DIR=`dirname ${SCRIPT_DIR}`/config
 LOG_FILE=/tmp/k8s-on-pi-install.log
 
+PROMETHEUS_VERSION="2.19.2"
+NODE_EXPORTER_VERSION="1.0.1"
+ARCH=`uname -m`
+if [ "aarch64" = $ARCH ] ; then
+	ARCH='arm64'
+fi
+
 log() {
 	TS=`date --rfc-3339=seconds`
 	echo $TS $1
@@ -23,6 +30,7 @@ log "Configure"
 sudo localectl set-keymap pl2 >>${LOG_FILE} 2>&1
 sudo localectl set-locale en_GB.UTF-8 >>${LOG_FILE} 2>&1
 sudo cp ${CONFIG_DIR}/docker/daemon.json /etc/docker/daemon.json >>${LOG_FILE} 2>&1
+sudo cp ${CONFIG_DIR}/systemd/system/* /etc/systemd/system/ >>${LOG_FILE} 2>&1
 sudo chsh --shell /usr/bin/zsh pi >>${LOG_FILE} 2>&1
 mkdir -p ~/.ssh && cp ${CONFIG_DIR}/ssh/authorized_keys ~/.ssh/authorized_keys >>${LOG_FILE} 2>&1
 cp -a ${CONFIG_DIR}/zsh ~/.zsh >>${LOG_FILE} 2>&1
@@ -36,6 +44,39 @@ mkdir ~/.local/bin >>${LOG_FILE} 2>&1
 curl -sfL git.io/antibody 2>>${LOG_FILE} | sh -s - -b ~/.local/bin/ >>${LOG_FILE} 2>&1
 ~/.local/bin/antibody bundle < ~/.zsh/plugins.txt > ~/.zsh/plugins.sh 2>>${LOG_FILE}
 log "Zsh set up, don't forget to \`source ~/.zshrc\`"
+
+log "Installing monitoring tools"
+sudo useradd -d /var/lib/prometheus -g 1 -m -N -s /usr/sbin/nologin -u 9090 prometheus >>${LOG_FILE} 2>&1
+# Download Prometheus
+curl -Lo /tmp/prometheus.tar.gz "https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-${ARCH}.tar.gz" 2>>${LOG_FILE}
+tar xzf /tmp/prometheus.tar.gz -C /tmp >>${LOG_FILE} 2>&1
+sudo mkdir -p /etc/prometheus >>${LOG_FILE} 2>&1
+sudo cp -r /tmp/prometheus-${PROMETHEUS_VERSION}.linux-${ARCH}/console* /etc/prometheus/ >>${LOG_FILE} 2>&1
+sudo cp -r ${CONFIG_DIR}/prometheus/prometheus.yml /etc/prometheus/ >>${LOG_FILE} 2>&1
+sudo chown -R prometheus:daemon /etc/prometheus >>${LOG_FILE} 2>&1
+for F in prometheus promtool tsdb ; do
+	sudo cp -a /tmp/prometheus-${PROMETHEUS_VERSION}.linux-${ARCH}/${F} /usr/local/bin/ >>${LOG_FILE} 2>&1
+	sudo chown -R prometheus:daemon /usr/local/bin/${F} >>${LOG_FILE} 2>&1
+done
+
+# Download node_exporter
+curl -Lo /tmp/node_exporter.tar.gz https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-${ARCH}.tar.gz >>${LOG_FILE} 2>&1
+tar xzf /tmp/node_exporter.tar.gz -C /tmp >>${LOG_FILE} 2>&1
+sudo cp /tmp/node_exporter-${NODE_EXPORTER_VERSION}.linux-${ARCH}/node_exporter /usr/local/bin >>${LOG_FILE} 2>&1
+sudo chown -R prometheus:daemon /usr/local/bin/node_exporter >>${LOG_FILE} 2>&1
+
+# Start Prometheus as systemd service
+sudo systemctl daemon-reload >>${LOG_FILE} 2>&1
+sudo systemctl restart prometheus.service >>${LOG_FILE} 2>&1
+sudo systemctl enable prometheus.service >>${LOG_FILE} 2>&1
+sudo systemctl restart node_exporter.service >>${LOG_FILE} 2>&1
+sudo systemctl enable node_exporter.service >>${LOG_FILE} 2>&1
+log "Monitoring services have been enabled"
+
+# Cleaning up
+log "Cleaning up"
+rm -rf /tmp/prometheus.tar.gz /tmp/prometheus-${PROMETHEUS_VERSION}.linux-${ARCH} >>${LOG_FILE} 2>&1
+rm -rf /tmp/node_exporter.tar.gz /tmp/node_exporter-${NODE_EXPORTER_VERSION}.linux-${ARCH} >>${LOG_FILE} 2>&1
 
 # Bye
 log "The log file of all operations is stored at ${LOG_FILE}"
