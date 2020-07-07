@@ -53,6 +53,8 @@ tar xzf /tmp/prometheus.tar.gz -C /tmp >>${LOG_FILE} 2>&1
 sudo mkdir -p /etc/prometheus >>${LOG_FILE} 2>&1
 sudo cp -r /tmp/prometheus-${PROMETHEUS_VERSION}.linux-${ARCH}/console* /etc/prometheus/ >>${LOG_FILE} 2>&1
 sudo cp -r ${CONFIG_DIR}/prometheus/prometheus.yml /etc/prometheus/ >>${LOG_FILE} 2>&1
+sudo cp -r ${CONFIG_DIR}/prometheus/alerts /etc/prometheus/ >>${LOG_FILE} 2>&1
+sudo cp -r ${CONFIG_DIR}/prometheus/rules /etc/prometheus/ >>${LOG_FILE} 2>&1
 sudo chown -R prometheus:daemon /etc/prometheus >>${LOG_FILE} 2>&1
 for F in prometheus promtool tsdb ; do
 	sudo cp -a /tmp/prometheus-${PROMETHEUS_VERSION}.linux-${ARCH}/${F} /usr/local/bin/ >>${LOG_FILE} 2>&1
