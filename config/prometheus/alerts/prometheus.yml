@@ -1,6 +1,7 @@
 groups:
   - name: prometheus
     rules:
+
       - alert: PrometheusJobMissing
         expr: absent(up{job="prometheus"})
         for: 5m
