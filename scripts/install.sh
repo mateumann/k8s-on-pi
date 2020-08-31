@@ -2,6 +2,7 @@
 
 SCRIPT_DIR=`dirname $(realpath $0)`
 CONFIG_DIR=`dirname ${SCRIPT_DIR}`/config
+FANCTRL_DIR=`dirname ${SCRIPT_DIR}`/fan_control
 LOG_FILE=/tmp/k8s-on-pi-install.log
 
 PROMETHEUS_VERSION="2.19.2"
@@ -74,6 +75,14 @@ sudo systemctl enable prometheus.service >>${LOG_FILE} 2>&1
 sudo systemctl restart node_exporter.service >>${LOG_FILE} 2>&1
 sudo systemctl enable node_exporter.service >>${LOG_FILE} 2>&1
 log "Monitoring services have been enabled"
+
+# Install fan_control
+log "Installing fan control service"
+sudo cp -a ${FANCTRL_DIR} /opt
+sudo mv /opt/fan_control/fanctrl.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable fanctrl.service
+log "Fan control service installed"
 
 # Cleaning up
 log "Cleaning up"
