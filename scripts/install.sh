@@ -78,10 +78,10 @@ log "Monitoring services have been enabled"
 
 # Install fan_control
 log "Installing fan control service"
-sudo cp -a ${FANCTRL_DIR} /opt
-sudo mv /opt/fan_control/fanctrl.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable fanctrl.service
+sudo cp -a ${FANCTRL_DIR} /opt >>${LOG_FILE} 2>&1
+sudo mv /opt/fan_control/fanctrl.service /etc/systemd/system/ >>${LOG_FILE} 2>&1
+sudo systemctl daemon-reload >>${LOG_FILE} 2>&1
+sudo systemctl enable fanctrl.service >>${LOG_FILE} 2>&1
 log "Fan control service installed"
 
 # Cleaning up
