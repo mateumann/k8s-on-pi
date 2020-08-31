@@ -2,13 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import RPi.GPIO as GPIO
+import logging
 import time
 import sys
+from systemd.journal import JournalHandler
+
+
+log = logging.getLogger('fanctrl')
+log.addHandler(JournalHandler())
+log.setLevel(logging.INFO)
 
 # Configuration
 FAN_PIN = 21  # BCM pin used to drive transistor's base
 WAIT_TIME = 1  # [s] Time to wait between each refresh
-FAN_MIN = 20  # [%] Fan minimum speed.
+FAN_MIN = 30  # [%] Fan minimum speed.
 PWM_FREQ = 25  # [Hz] Change this value if fan has strange behavior
 
 # Configurable temperature and fan speed steps
@@ -32,7 +39,7 @@ fanSpeedOld = 0
 
 # We must set a speed value for each temperature step
 if len(speedSteps) != len(tempSteps):
-    print("Numbers of temp steps and speed steps are different")
+    log.error("Numbers of temp steps and speed steps are different")
     exit(0)
 
 try:
@@ -45,6 +52,7 @@ try:
         # Calculate desired fan speed
         if abs(cpuTemp - cpuTempOld) > hyst:
             # Below first value, fan will run at min speed.
+            log.info("Temperature changed new one is {0} °C".format(cpuTemp))
             if cpuTemp < tempSteps[0]:
                 fanSpeed = speedSteps[0]
             # Above last value, fan will run at max speed
@@ -61,11 +69,14 @@ try:
                                          * (cpuTemp - tempSteps[i])
                                          + speedSteps[i], 1)
 
+            log.debug("Calculated fan speed is {0} %".format(fanSpeed))
             if fanSpeed != fanSpeedOld:
                 if (fanSpeed != fanSpeedOld
                         and (fanSpeed >= FAN_MIN or fanSpeed == 0)):
                     fan.ChangeDutyCycle(fanSpeed)
                     fanSpeedOld = fanSpeed
+                log.info("Sensed {0} °C. Running fan at {1} %".format(
+                    cpuTemp, fanSpeed))
             cpuTempOld = cpuTemp
 
         # Wait until next refresh
