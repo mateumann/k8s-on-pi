@@ -9,7 +9,7 @@ from systemd.journal import JournalHandler
 
 
 log = logging.getLogger('fanctrl')
-log.addHandler(JournalHandler())
+log.addHandler(JournalHandler(SYSLOG_IDENTIFIER='fanctrl'))
 log.setLevel(logging.INFO)
 
 # Configuration
