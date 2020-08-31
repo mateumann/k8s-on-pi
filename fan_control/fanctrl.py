@@ -52,7 +52,7 @@ try:
         # Calculate desired fan speed
         if abs(cpuTemp - cpuTempOld) > hyst:
             # Below first value, fan will run at min speed.
-            log.info("Temperature changed new one is {0} °C".format(cpuTemp))
+            log.debug("Temperature changed new one is {0} °C".format(cpuTemp))
             if cpuTemp < tempSteps[0]:
                 fanSpeed = speedSteps[0]
             # Above last value, fan will run at max speed
