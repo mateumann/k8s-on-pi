@@ -50,7 +50,7 @@ def setup(fan_pin: int, pwm_frequency: int) -> GPIO.PWM:
     return pwm
 
 
-def teardown(_signal_number, _stack_frame):
+def teardown(_signal_number=None, _stack_frame=None):
     GPIO.cleanup()
     log.info(f'{APP_DESCRIPTION} gracefully stopped ')
     exit(0)
