@@ -3,6 +3,7 @@
 
 import logging
 from os.path import basename, splitext
+from signal import signal, SIGTERM
 from systemd.journal import JournalHandler
 from time import sleep
 
@@ -27,7 +28,6 @@ APP_DESCRIPTION = 'Raspberry Pi Fan Control'
 
 log = logging.getLogger(APP_NAME)
 log.addHandler(JournalHandler(SYSLOG_IDENTIFIER=APP_NAME))
-# log.addHandler(logging.FileHandler(f'/tmp/{APP_NAME}.log'))
 log.setLevel(logging.INFO)
 
 
@@ -86,9 +86,10 @@ if __name__ == '__main__':
     try:
         validate(FAN_SPEED_STEPS, CPU_TEMP_STEPS)
     except PiFanException as ex:
-        log.fatal('Validation error: %s.  Terminating.', ex)
+        log.fatal(f'Validation error: {ex}.  Terminating.')
         exit(1)
     fan = setup(FAN_PIN, PWM_FREQ)
+    signal(SIGTERM, teardown)
 
     first_run = True
     cpu_temperature_old = 0.0
@@ -103,14 +104,14 @@ if __name__ == '__main__':
                          f'temperature steps={CPU_TEMP_STEPS}, '
                          f'fan speed steps={FAN_SPEED_STEPS}, '
                          f'minimum fan speed={FAN_SPEED_MIN}.  '
-                         f'CPU temperature is {cpu_temperature:.1f}, '
+                         f'CPU temperature is {cpu_temperature:.1f}°C, '
                          'fan is not running.')
                 first_run = False
             if abs(cpu_temperature -
                    cpu_temperature_old) < CPU_TEMP_HYSTERESIS:
                 continue
             log.debug('Temperature changed above hysteresis: '
-                      f'{cpu_temperature:.1f} °C')
+                      f'{cpu_temperature:.1f}°C')
             cpu_temperature_old = cpu_temperature
             fan_speed = calculate_fan_speed(cpu_temperature,
                                             CPU_TEMP_STEPS,
@@ -122,8 +123,8 @@ if __name__ == '__main__':
             if fan_speed >= FAN_SPEED_MIN or fan_speed == 0.0:
                 fan.ChangeDutyCycle(fan_speed)
                 fan_speed_old = fan_speed
-                log.info(f'Sensed {cpu_temperature:.1f} °C.  '
-                         f'Fan running at {fan_speed:.1f} %')
+                log.info(f'Sensed {cpu_temperature:.1f}°C.  '
+                         f'Fan running at {fan_speed:.1f}%')
 
     finally:
         teardown()
