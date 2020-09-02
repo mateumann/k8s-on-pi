@@ -27,7 +27,7 @@ APP_DESCRIPTION = 'Raspberry Pi Fan Control'
 
 log = logging.getLogger(APP_NAME)
 log.addHandler(JournalHandler(SYSLOG_IDENTIFIER=APP_NAME))
-log.addHandler(logging.FileHandler(f'/tmp/{APP_NAME}.log'))
+# log.addHandler(logging.FileHandler(f'/tmp/{APP_NAME}.log'))
 log.setLevel(logging.INFO)
 
 
