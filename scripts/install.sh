@@ -53,9 +53,16 @@ log "Installing fan control service"
 sudo apt install -y python3-systemd >>${LOG_FILE} 2>&1
 sudo cp -a ${FANCTRL_DIR} /opt >>${LOG_FILE} 2>&1
 sudo mv /opt/fan_control/pifanctl.service /etc/systemd/system/ >>${LOG_FILE} 2>&1
-sudo systemctl daemon-reload >>${LOG_FILE} 2>&1
+sudo systemctl daemon-reload
 sudo systemctl enable pifanctl.service >>${LOG_FILE} 2>&1
 log "Fan control service installed"
+
+# Prepare k3s environment
+log "Preparing k3s environment (dependencies and stuff)"
+sudo iptables -F >>${LOG_FILE} 2>&1
+sudo update-alternatives --set iptables /usr/sbin/iptables-legacy >>${LOG_FILE} 2>&1
+sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy >>${LOG_FILE} 2>&1
+log "Please reboot afterwards"
 
 # Cleaning up
 log "Cleaning up"
