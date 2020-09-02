@@ -3,7 +3,7 @@
 
 import logging
 from os.path import basename, splitext
-from signal import signal, SIGTERM
+# from signal import signal, SIGTERM
 from sys import exit
 from systemd.journal import JournalHandler
 from time import sleep
@@ -91,7 +91,7 @@ if __name__ == '__main__':
         log.fatal(f'Validation error: {ex}.  Terminating.')
         exit(1)
     fan = setup(FAN_PIN, PWM_FREQ)
-    signal(SIGTERM, teardown)
+    # signal(SIGTERM, teardown)
 
     first_run = True
     cpu_temperature_old = 0.0
