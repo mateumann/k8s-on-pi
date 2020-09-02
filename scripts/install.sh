@@ -52,9 +52,9 @@ log "Zsh set up, don't forget to \`source ~/.zshrc\`"
 log "Installing fan control service"
 sudo apt install -y python3-systemd >>${LOG_FILE} 2>&1
 sudo cp -a ${FANCTRL_DIR} /opt >>${LOG_FILE} 2>&1
-sudo mv /opt/fan_control/fanctrl.service /etc/systemd/system/ >>${LOG_FILE} 2>&1
+sudo mv /opt/fan_control/pifanctl.service /etc/systemd/system/ >>${LOG_FILE} 2>&1
 sudo systemctl daemon-reload >>${LOG_FILE} 2>&1
-sudo systemctl enable fanctrl.service >>${LOG_FILE} 2>&1
+sudo systemctl enable pifanctl.service >>${LOG_FILE} 2>&1
 log "Fan control service installed"
 
 # Cleaning up
