@@ -21,7 +21,7 @@ FAN_PIN = 21  # BCM pin used to drive transistor's base
 FAN_SPEED_MIN = 30  # minimum fan speed (in percent)
 FAN_SPEED_STEPS = [0, 100]
 CPU_TEMP_HYSTERESIS = 1.5  # minimum temperature difference to act upon
-CPU_TEMP_STEPS = [50, 70]
+CPU_TEMP_STEPS = [55, 70]
 CPU_THERMAL_ZONE = 0
 
 APP_NAME = splitext(basename(__file__))[0]  # pifanctl
