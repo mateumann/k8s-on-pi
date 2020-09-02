@@ -4,6 +4,7 @@
 import logging
 from os.path import basename, splitext
 from signal import signal, SIGTERM
+from sys import exit
 from systemd.journal import JournalHandler
 from time import sleep
 
@@ -52,6 +53,7 @@ def setup(fan_pin: int, pwm_frequency: int) -> GPIO.PWM:
 def teardown(_signal_number, _stack_frame):
     GPIO.cleanup()
     log.info(f'{APP_DESCRIPTION} gracefully stopped ')
+    exit(0)
 
 
 def get_temperature(thermal_zone: int = 0) -> float:
