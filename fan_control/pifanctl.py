@@ -17,9 +17,9 @@ PROBE_DELAY = 1.5  # time between each temperature probe (in seconds)
 PWM_FREQ = 25  # Change this value if fan behaves strangely (in Hz)
 FAN_PIN = 21  # BCM pin used to drive transistor's base
 FAN_SPEED_MIN = 30  # minimum fan speed (in percent)
-FAN_SPEED_STEPS = [0, 50, 100]
+FAN_SPEED_STEPS = [0, 100]
 CPU_TEMP_HYSTERESIS = 1.5  # minimum temperature difference to act upon
-CPU_TEMP_STEPS = [30, 60, 70]
+CPU_TEMP_STEPS = [50, 70]
 CPU_THERMAL_ZONE = 0
 
 APP_NAME = splitext(basename(__file__))[0]  # pifanctl
@@ -124,8 +124,6 @@ if __name__ == '__main__':
                 fan_speed_old = fan_speed
                 log.info(f'Sensed {cpu_temperature:.1f} °C.  '
                          f'Fan running at {fan_speed:.1f} %')
-
-            break
 
     finally:
         teardown()
