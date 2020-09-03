@@ -4,7 +4,7 @@ windows:
   - default:
       layout: 8389,212x50,0,0[213x16,0,0{127x16,0,0,0,85x16,128,0,1},213x33,0,17,2]
       panes:
-        - journal -u pifanctl -f
+        - journalctl -u pifanctl -f
         - watch -n10 vcgencmd measure_temp
         - clear
 
