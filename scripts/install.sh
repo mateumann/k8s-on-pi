@@ -34,8 +34,8 @@ sudo localectl set-locale en_GB.UTF-8 >>${LOG_FILE} 2>&1
 #sudo cp ${CONFIG_DIR}/systemd/system/* /etc/systemd/system/ >>${LOG_FILE} 2>&1
 sudo chsh --shell /usr/bin/zsh pi >>${LOG_FILE} 2>&1
 mkdir -p ~/.ssh && cp ${CONFIG_DIR}/ssh/authorized_keys ~/.ssh/authorized_keys >>${LOG_FILE} 2>&1
-cp -a ${CONFIG_DIR}/tmuxinator ~/.tmuxinator >>${LOG_FILE} 2>&1
-cp -a ${CONFIG_DIR}/zsh ~/.zsh >>${LOG_FILE} 2>&1
+rm -rf ~/.tmuxinator && cp -a ${CONFIG_DIR}/tmuxinator ~/.tmuxinator >>${LOG_FILE} 2>&1
+rm -r ~/.zsh && cp -a ${CONFIG_DIR}/zsh ~/.zsh >>${LOG_FILE} 2>&1
 mkdir -p ~/.local/share && cp -a ${CONFIG_DIR}/fzf ~/.local/share/ >>${LOG_FILE} 2>&1
 CWD=$(pwd)
 cd ~/ && ln -s .zsh/zshrc .zshrc >>${LOG_FILE} 2>&1
