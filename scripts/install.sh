@@ -30,7 +30,7 @@ sudo apt install -y vim tmux git zsh fzf atop aptitude nmap >>${LOG_FILE} 2>&1
 log "Configure"
 sudo localectl set-keymap pl2 >>${LOG_FILE} 2>&1
 sudo localectl set-locale en_GB.UTF-8 >>${LOG_FILE} 2>&1
-sudo cp ${CONFIG_DIR}/docker/daemon.json /etc/docker/daemon.json >>${LOG_FILE} 2>&1
+#sudo cp ${CONFIG_DIR}/docker/daemon.json /etc/docker/daemon.json >>${LOG_FILE} 2>&1
 #sudo cp ${CONFIG_DIR}/systemd/system/* /etc/systemd/system/ >>${LOG_FILE} 2>&1
 sudo chsh --shell /usr/bin/zsh pi >>${LOG_FILE} 2>&1
 mkdir -p ~/.ssh && cp ${CONFIG_DIR}/ssh/authorized_keys ~/.ssh/authorized_keys >>${LOG_FILE} 2>&1
