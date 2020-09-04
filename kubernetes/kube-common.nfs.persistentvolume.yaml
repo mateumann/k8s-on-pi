@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kube-common-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/handy250g/kube-common"
+---
+
