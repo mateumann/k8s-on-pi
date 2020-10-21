@@ -12,6 +12,6 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/handy250g/kube-common"
+    path: "/mnt/data/kube-common"
 ---
 
