@@ -12,6 +12,6 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/data/kube-common"
+    path: "/mnt/nfs/kube-common"
 ---
 
