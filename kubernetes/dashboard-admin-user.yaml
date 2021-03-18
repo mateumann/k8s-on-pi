@@ -18,4 +18,3 @@ subjects:
   name: admin-user
   namespace: kubernetes-dashboard
 ---
-

@@ -3,7 +3,7 @@
 ##
 image:
   repository: nextcloud
-  tag: 20.0.5-apache
+  tag: 19.0.3-apache
   pullPolicy: IfNotPresent
   # pullSecrets:
   #   - myRegistrKeySecretName
@@ -22,7 +22,7 @@ ingress:
   annotations: {}
   #  nginx.ingress.kubernetes.io/proxy-body-size: 4G
   #  kubernetes.io/tls-acme: "true"
-  #  certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+  #  cert-manager.io/cluster-issuer: letsencrypt-prod
   #  nginx.ingress.kubernetes.io/server-snippet: |-
   #    server_tokens off;
   #    proxy_hide_header X-Powered-By;
@@ -47,10 +47,10 @@ ingress:
   #    location ~ ^/(?:autotest|occ|issue|indie|db_|console) {
   #      deny all;
   #    }
-  #  tls:
-  #    - secretName: nextcloud-tls
-  #      hosts:
-  #        - nextcloud.kube.home
+  # tls:
+  #   - secretName: nextcloud-tls
+  #     hosts:
+  #       - nextcloud.kube.home
   labels: {}
 
 
@@ -63,10 +63,17 @@ lifecycle: {}
 nextcloud:
   host: cloud.kube.aman
   username: admin
-  password: '<eR[#30=-!n8kP:8YO/2%2UxE'
+  password: "<eR[#30=-!n8kP:8YO/2%2UxE"
+  ## Use an existing secret
+  existingSecret:
+    enabled: false
+    # secretName: nameofsecret
+    # usernameKey: username
+    # passwordKey: password
+    # smtpUsernameKey: smtp_username
+    # smtpPasswordKey: smtp_password
   update: 0
   datadir: /var/www/html/data
-  tableprefix:
   persistence:
     subPath:
   mail:
@@ -81,7 +88,7 @@ nextcloud:
       name: user
       password: pass
   # PHP Configuration files
-  # Will be injected in /usr/local/etc/php/conf.d
+  # Will be injected in /usr/local/etc/php/conf.d for apache image and in /usr/local/etc/php-fpm.d when nginx.enabled: true
   phpConfigs: {}
   # Default config files
   # IMPORTANT: Will be used only if you put extra configs, otherwise default will come from nextcloud itself
@@ -216,20 +223,37 @@ mariadb:
     user: nextcloud
     password: changeme
 
+  replication:
+    enabled: false
+
   ## Enable persistence using Persistent Volume Claims
   ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
   ##
+  master:
+    persistence:
+      enabled: false
+      # storageClass: ""
+      accessMode: ReadWriteOnce
+      size: 8Gi
+
+postgresql:
+  enabled: false
+  global:
+    postgresql:
+      postgresqlUsername: nextcloud
+      postgresqlPassword: changeme
+      postgresqlDatabase: nextcloud
   persistence:
     enabled: false
-    accessMode: ReadWriteOnce
-    size: 8Gi
+    # storageClass: ""
 
 redis:
   enabled: false
-  usePassword: false
+  usePassword: true
+  password: 'changeme'
 
 ## Cronjob to execute Nextcloud background tasks
-## ref: https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#cron-jobs
+## ref: https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html#webcron
 ##
 cronjob:
   enabled: false
@@ -240,10 +264,10 @@ cronjob:
     # pullPolicy: IfNotPresent
     # pullSecrets:
     #   - myRegistrKeySecretName
-  # Every 15 minutes
-  # Note: Setting this to any any other value than 15 minutes might
+  # Every 5 minutes
+  # Note: Setting this to any any other value than 5 minutes might
   #  cause issues with how nextcloud background jobs are executed
-  schedule: "*/15 * * * *"
+  schedule: "*/5 * * * *"
   annotations: {}
   # Set curl's insecure option if you use e.g. self-signed certificates
   curlInsecure: false
@@ -296,11 +320,10 @@ persistence:
   ## A manually managed Persistent Volume and Claim
   ## Requires persistence.enabled: true
   ## If defined, PVC must be created manually before volume will be bound
-  # existingClaim:
-  existingClaim: "nextcloud" # Persistent Volume Claim created earlier
+  existingClaim: nextcloud-ssd
 
   accessMode: ReadWriteOnce
-  size: "50Gi"
+  size: 20Gi
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -319,18 +342,26 @@ resources: {}
 ##
 livenessProbe:
   enabled: true
-  initialDelaySeconds: 30
-  periodSeconds: 15
+  initialDelaySeconds: 10
+  periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
   successThreshold: 1
 readinessProbe:
   enabled: true
-  initialDelaySeconds: 30
-  periodSeconds: 15
+  initialDelaySeconds: 10
+  periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
   successThreshold: 1
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
+  successThreshold: 1
+
 
 ## Enable pod autoscaling using HorizontalPodAutoscaler
 ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
