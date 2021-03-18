@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: "nextcloud"
+  name: redis
+spec:
+  serviceName: redis
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: master
+          image: redis
+          env:
+            - name: MASTER
+              value: "true"
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: lv-storage
+              mountPath: /data
+          env:
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "true"
+      volumes:
+        - name: lv-storage
+          persistentVolumeClaim:
+            claimName: redis-ssd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: "nextcloud"
+  name: redis
+spec:
+  clusterIP: None
+  ports:
+    - name: redis-port
+      port: 6379
+      targetPort: 6379
+      protocol: TCP
+  selector:
+    app: redis
+
+

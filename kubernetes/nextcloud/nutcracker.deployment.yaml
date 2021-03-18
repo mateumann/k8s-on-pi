@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: nextcloud
+  name: nutcracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nutcracker
+  template:
+    metadata:
+      labels:
+        app: nutcracker
+    spec:
+      volumes:
+        - name: nutcracker-config
+          configMap:
+            name: nutcracker-config
+      containers:
+        - name: nutcracker
+          image: mateumann/nutcracker:0.4.1
+          imagePullPolicy: "Always"
+          ports:
+          - containerPort: 9999
+          #imagePullPolicy: Always
+          volumeMounts:
+          - name: nutcracker-config
+            mountPath: /etc/nutcracker.conf
+            subPath: nutcracker.conf
+
